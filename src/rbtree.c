@@ -10,28 +10,32 @@ rbtree *new_rbtree(void) {
   p->nil->parent = NULL;
   p->nil->left = NULL;
   p->nil->right = NULL;
+  p->nil->key = NULL;
   p->root = p->nil;
   return p;
+}
+
+void delete_rbtree_node(node_t* n){
+  if (n!= NULL){
+    if (n->right != NULL)
+      delete_rbtree_node(n->right);
+    else if (n->left != NULL) 
+      delete_rbtree(n->left);
+    free(n);
+    n = NULL;
+  }
 }
 
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
   if (t->root != t->nil){
-    if (t->root->left == t->nil && t->root->right == t->nil)
-      free(t->root);
-    else{
-      rbtree *tt = new_rbtree();
-      if(t->root->left != t->nil){
-        tt->root = t->root->left;
-        delete_rbtree(tt);
-      }
-      if(t->root->right != t->nil){
-        tt->root = t->root->right;
-        delete_rbtree(tt);
-      }
-    }
+    delete_rbtree_node(t->root);
+  }
+  else{
+    free(t->nil);
   }
   free(t);
+  t = NULL;
 }
 
 node_t* rbtree_left_rotate(rbtree *t, node_t *n){
@@ -78,6 +82,7 @@ void rbtree_recolor(int flag, node_t *n){
 }
 
 void rbtree_check(rbtree *t,node_t * n){
+  printf("CHECK FUNCTION!!\n");
   // if parent of new node == "RED"
   if (n->parent->color == RBTREE_RED){
     // 1. sibling of parent == "BLACK" or t->nil -> ROTATE && RECOLOR
@@ -119,9 +124,39 @@ void rbtree_check(rbtree *t,node_t * n){
   }
 }
 
+node_t * rbtree_insert_node(rbtree *t, node_t *n, const key_t key){
+  node_t *newNode;
+  if (n->key > key){
+    if (n->left != t->nil){
+      rbtree_insert_node(t, n->left, key);
+    }else{
+      n->left = (node_t *)malloc(sizeof(node_t));
+      newNode = n->left;
+      n->left->key = key;
+      n->left->parent = n;
+      n->left->left = t->nil;
+      n->left->right = t->nil;
+      n->left->color = RBTREE_RED;
+    }
+  }else{
+    if(n->right != t->nil){
+      rbtree_insert_node(t, n->right, key);
+    }else{
+      n->right = (node_t *)malloc(sizeof(node_t));
+      newNode = n->right;
+      n->right->key = key;
+      n->right->parent = n;
+      n->right->left = t->nil;
+      n->right->right = t->nil;
+      n->right->color = RBTREE_RED;
+    }
+  }
+  return newNode;
+}
+
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   //TODO: implement insert
-  node_t* newNode;
+  node_t *newNode;
   // no node in tree
   if (t->root == t->nil){
     t->root = (node_t *)malloc(sizeof(node_t));
@@ -131,100 +166,60 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     newNode->left = t->nil;
     newNode->right = t->nil;
     newNode->key = key;
-    return t->root;
-  }
-  else
+    return newNode;
+  }else
   {
     // at least one node in tree
-    if (key > t->root->key){
-      if (t->root->left != t->nil){
-        rbtree *tt = new_rbtree();
-        tt->root = t->root->left;
-        rbtree_insert(tt, key);
-      }
-      else{
-        t->root->left = (node_t *)malloc(sizeof(node_t));
-        newNode = t->root->left;
-        newNode->color = RBTREE_RED;
-        newNode->parent = t->root;
-        newNode->left = t->nil;
-        newNode->right = t->nil;
-        newNode->key = key;
-      }
-    }
-    else{
-      if (t->root->right != t->nil){
-        rbtree *tt = new_rbtree();
-        tt->root = t->root->left;
-        rbtree_insert(tt, key);
-      }
-      else{
-        t->root->right = (node_t *)malloc(sizeof(node_t));
-        newNode = t->root->right;
-        newNode->color = RBTREE_RED;
-        newNode->parent = t->root;
-        newNode->left = t->nil;
-        newNode->right = t->nil;
-        newNode->key = key;
-      }
-    }
+    newNode = rbtree_insert_node(t, t->root, key);
+    rbtree_check(t, newNode);
+    return newNode;
   }
-  rbtree_check(t, newNode);
 }
 
 node_t *rbtree_find_node(node_t * n, const key_t key){
-  if(n->key > key){
-    if (n->right != NULL){
-      return rbtree_find_node(n->right, key);
-    }else
-      return NULL;
-  }else if (n->key < key){
-    if (n->left != NULL){
-      return rbtree_find_node(n->left, key);
-    }else
-      return NULL;
-  }else
-    return n;
+  if (n == NULL)
+    return NULL;
+  if (n->key > key)rbtree_find_node(n->right, key);
+  else if (n->key < key)rbtree_find_node(n->left, key);
+  else return n;
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find 
   if (t->root == t->nil)
     return NULL;
-  node_t *n = t->root;
-  return rbtree_find_node(n, key);
-
-  // return t->root;
+  node_t* tmp = rbtree_find_node(t->root, key);
+  return tmp;
 }
 
 node_t *rbtree_min(const rbtree *t) {
-  // // TODO: implement find
-  // node_t* n;
-  // if (t->root != t->nil){
-  //   n = t->root;
-  //   node_t *pn;
-  //   do{
-  //     pn = n;
-  //     n = n->left;
-  //   } while (n != t->nil);
-  //   return pn->key;
-  // }
-  // return t->root;
+  // TODO: implement find
+  node_t* n;
+  if (t->root != t->nil){
+    n = t->root;
+    node_t *pn;
+    do{
+      pn = n;
+      n = n->left;
+    } while (n != t->nil);
+    return pn;
+  }
+  return t->root;
 }
 
 node_t *rbtree_max(const rbtree *t) {
-  // // TODO: implement find
-  // node_t *n;
-  // if (t->root != t->nil){
-  //   n = t->root;
-  //   node_t *pn;
-  //   do{
-  //     pn = n;
-  //     n = n->right;
-  //   } while (n != t->nil);
-  //   return pn->key;
-  // }
-  // return t->root;
+  // TODO: implement find
+  node_t *n;
+  if (t->root != t->nil){
+    n = t->root;
+    node_t *pn;
+    do{
+      pn = n;
+      n = n->right;
+    } while (n != t->nil);
+    return pn;
+  }
+  return t->root;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
@@ -232,7 +227,22 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
+node_t* rbtree_node_inorder(node_t* node, key_t *arr, int limit){
+  if (node == NULL)
+    return NULL;
+  rbtree_node_inorder(node->left, arr, limit);
+  if (arr < limit){
+    *(arr) = node->key;
+    arr += sizeof(key_t);
+  }
+  rbtree_node_inorder(node->right, arr, limit);
+}
+
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
+  if (t->root != t->nil){
+    rbtree_node_inorder(t->root, arr, (int)arr+(sizeof(key_t)*n));
+    return 1;
+  }
   return 0;
 }

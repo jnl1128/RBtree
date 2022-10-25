@@ -73,7 +73,6 @@ void test_find_single(const key_t key, const key_t wrong_key) {
 
 static void insert_arr(rbtree *t, const key_t *arr, const size_t n) {
   for (size_t i = 0; i < n; i++) {
-    printf("i:%ld\n", i);
     rbtree_insert(t, arr[i]);
   }
 }
@@ -113,6 +112,9 @@ void test_minmax(key_t *arr, const size_t n) {
   node_t *q = rbtree_max(t);
   assert(q != NULL);
   assert(q->key == arr[n - 1]);
+
+  for (int i = 0; i < n; i++)
+    printf("%d\n", arr[i]);
 
   // re-check here!!(it means, getting min and max correctly)
   rbtree_erase(t, p);

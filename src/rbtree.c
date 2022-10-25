@@ -82,7 +82,6 @@ void rbtree_recolor(int flag, node_t *n){
 }
 
 void rbtree_check(rbtree *t,node_t * n){
-  printf("CHECK FUNCTION!!\n");
   // if parent of new node == "RED"
   if (n->parent->color == RBTREE_RED){
     // 1. sibling of parent == "BLACK" or t->nil -> ROTATE && RECOLOR
@@ -176,11 +175,11 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   }
 }
 
-node_t *rbtree_find_node(node_t * n, const key_t key){
-  if (n == NULL)
+node_t *rbtree_find_node(const rbtree *t, node_t * n, const key_t key){
+  if (n == t->nil)
     return NULL;
-  if (n->key > key)rbtree_find_node(n->right, key);
-  else if (n->key < key)rbtree_find_node(n->left, key);
+  if (n->key > key)rbtree_find_node(t, n->right, key);
+  else if (n->key < key)rbtree_find_node(t, n->left, key);
   else return n;
 }
 
@@ -188,8 +187,7 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find 
   if (t->root == t->nil)
     return NULL;
-  node_t* tmp = rbtree_find_node(t->root, key);
-  return tmp;
+  return rbtree_find_node(t, t->root, key);
 }
 
 node_t *rbtree_min(const rbtree *t) {

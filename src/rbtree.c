@@ -26,7 +26,7 @@ void delete_rbtree_node(node_t* nil, node_t* n){
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
   // if (t->root != t->nil){
-    delete_rbtree_node(t->nil, t->root);
+  delete_rbtree_node(t->nil, t->root);
   // }
   free(t->nil);
   free(t);
@@ -76,7 +76,7 @@ void rbtree_recolor(int flag, node_t *n){
 }
 
 void rbtree_insert_check(rbtree *t,node_t * n){
-  printf("me: %d(%d), myparent: %d(%d)\n", n->key,n->color,  n->parent->key, n->parent->color);
+  // printf("me: %d(%d), myparent: %d(%d)\n", n->key,n->color,  n->parent->key, n->parent->color);
   if (n == t->root)
     return;
   if (n->parent->color == RBTREE_BLACK)
@@ -89,14 +89,14 @@ void rbtree_insert_check(rbtree *t,node_t * n){
     // 0: left rotate, 1: right rotate
     if (n->parent == n->parent->parent->left)
     { // n->parent: left child
-      printf("my parent(%d) is left child\n", n->parent->key);
+      // printf("my parent(%d) is left child\n", n->parent->key);
       if (n->parent->parent->right->color == RBTREE_BLACK)
       {
         // parent sibling = black;
-        printf("my uncle(%d) is black\n", n->parent->parent->right->key);
+        // printf("my uncle(%d) is black\n", n->parent->parent->right->key);
         int R0 = (n == n->parent->left) ? 0 : 1;
         int R1 = (n->parent == n->parent->parent->left) ? 0 : 1;
-        printf("R0: %d,R1: %d\n", R0, R1);
+        // printf("R0: %d,R1: %d\n", R0, R1);
 
         if (R0 == 0 && R1 == 0)
         { // LL
@@ -116,23 +116,23 @@ void rbtree_insert_check(rbtree *t,node_t * n){
         }
         else if (R0 == 1 && R1 == 0)
         { // RL
-          printf("RL-----------------------------\n");
+          // printf("RL-----------------------------\n");
           n = rbtree_left_rotate(t, n->parent);
-          printf("n: %d(%d), n->left:%d(%d)\n", n->key, n->color,n->left->key, n->left->color);
+          // printf("n: %d(%d), n->left:%d(%d)\n", n->key, n->color,n->left->key, n->left->color);
 
-          printf("newly grand: %d(%p) parent: %d(%p)\n", n->parent->key,n->parent, n->key, n);
+          // printf("newly grand: %d(%p) parent: %d(%p)\n", n->parent->key,n->parent, n->key, n);
 
           n = rbtree_right_rotate(t, n->parent);
-          printf("n: %d(%d), n->right:%d(%d)\n", n->key, n->color,n->right->key, n->right->color);
+          // printf("n: %d(%d), n->right:%d(%d)\n", n->key, n->color,n->right->key, n->right->color);
           rbtree_recolor(1, n);
-          printf("n: %d(%d), n->right:%d(%d)\n", n->key, n->color,n->right->key, n->right->color);
-          printf("-----------------------------\n");
+          // printf("n: %d(%d), n->right:%d(%d)\n", n->key, n->color,n->right->key, n->right->color);
+          // printf("-----------------------------\n");
         }
       }
       else
       {
         // parent sibiling = red;
-        printf("my uncle is red\n");
+        // printf("my uncle is red\n");
         n->parent->parent->right->color = RBTREE_BLACK;
         n->parent->color = RBTREE_BLACK;
         if (n->parent->parent != t->root)
@@ -145,12 +145,12 @@ void rbtree_insert_check(rbtree *t,node_t * n){
         }
       }
       }else{
-        printf("my(%d) parent is right child\n", n->key);
+        // printf("my(%d) parent is right child\n", n->key);
         if(n->parent->parent->left->color == RBTREE_BLACK){
-          printf("my uncle is black\n");
+          // printf("my uncle is black\n");
           int R0 = (n == n->parent->left) ? 0 : 1;
           int R1 = (n->parent == n->parent->parent->left) ? 0 : 1;
-          printf("R0: %d, R1: %d\n", R0, R1);
+          // printf("R0: %d, R1: %d\n", R0, R1);
 
           if (R0 == 0 && R1 == 0){//LL
             rbtree_right_rotate(t, n->parent->parent);
@@ -169,7 +169,7 @@ void rbtree_insert_check(rbtree *t,node_t * n){
             
           } 
         }else{
-          printf("my uncle is red(key: %d)\n", n->parent->parent->left->key);
+          // printf("my uncle is red(key: %d)\n", n->parent->parent->left->key);
           // 2. sibling of parent == "RED" -> make parent sibling BLACK && if GRANDPARENT IS NOT ROOT - RECOLOR GRANDPARENT AND RECHECK
           // 1) recolor(make RED) sibiling of parent and parent
           n->parent->parent->left->color = RBTREE_BLACK;
@@ -180,11 +180,9 @@ void rbtree_insert_check(rbtree *t,node_t * n){
               n->parent->parent->color = RBTREE_BLACK;
             else
               n->parent->parent->color = RBTREE_RED;
-            printf("grandparent is not root: %d(%d)\n", n->parent->parent->key, n->parent->parent->color);
+            // printf("grandparent is not root: %d(%d)\n", n->parent->parent->key, n->parent->parent->color);
             rbtree_insert_check(t, n->parent->parent);
           }
-          else
-            printf("my grandparent is root!\n");
         }
       }
   }
@@ -194,7 +192,7 @@ node_t * rbtree_insert_node(rbtree *t, node_t *n, const key_t key){
 
   if (n->key > key){
     if (n->left != t->nil){
-      rbtree_insert_node(t, n->left, key);
+      return rbtree_insert_node(t, n->left, key);
     }else{
       node_t * newNode = (node_t *)malloc(sizeof(node_t));
       n->left = newNode;
@@ -207,7 +205,7 @@ node_t * rbtree_insert_node(rbtree *t, node_t *n, const key_t key){
     }
   }else{
     if(n->right != t->nil){
-      rbtree_insert_node(t, n->right, key);
+      return rbtree_insert_node(t, n->right, key);
     }else{
       node_t *newNode = (node_t *)malloc(sizeof(node_t));
       n->right = newNode;
@@ -243,26 +241,27 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   }
 }
 
-node_t *rbtree_find_node(const rbtree *t, node_t * n, const key_t key){
-  if (n == t->nil)
-    return NULL;
-
-  if (n->key > key){
-    rbtree_find_node(t, n->right, key);
+node_t *rbtree_find_node(node_t* nil, node_t * n, const key_t key){
+  while(n != nil && n->key != key){
+    if (n->key > key){
+      n = n->left;
+    }else{
+      n = n->right;
+    }
   }
-  else if (n->key < key){
-    rbtree_find_node(t, n->left, key);
-  }else{
+  if (n != nil)
     return n;
-  }
+  else
+    return NULL;
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find 
-  if (t->root == t->nil)
-    return NULL;
-  return rbtree_find_node(t, t->root, key);
+  // if (t->root == t->nil)
+  //   return NULL;
+  return rbtree_find_node(t->nil, t->root, key);
 }
+
 
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
@@ -417,7 +416,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
     else
     {
       n = rbtree_min_node(t, n->right);
-      printf("NN: %p %d\n", n, n->key);
+      // printf("NN: %p %d\n", n, n->key);
       n_origin_color = n->color;
       q = n->right;
       if (n->parent == p)
@@ -446,9 +445,10 @@ void rbtree_inorder(node_t* nil, key_t *arr, node_t *n, int* index){
     return;
   rbtree_inorder(nil, arr, n->left, index);
   arr[(*index)++] = n->key;
-  printf("key: %d, color: %d(0:red, 1:black)\n", n->key, n->color);
-  printf("left: %d, right: %d parent: %d\n", n->left->key, n->right->key, n->parent->key);
-  printf("---------------------------------\n");
+  // printf(">%d\n", n->key);
+   // printf("key: %d, color: %d(0:red, 1:black)\n", n->key, n->color);
+  // printf("left: %d, right: %d parent: %d\n", n->left->key, n->right->key, n->parent->key);
+  // printf("---------------------------------\n");
   rbtree_inorder(nil, arr, n->right, index);
 }
 
@@ -457,9 +457,6 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   if (t->root != t->nil){
     int *index = (int *)malloc(sizeof(int));
     *index = 0;
-    printf("root! %d %d\n", t->root->key, t->root->color);
-    printf("root->left: %d, right: %d parent: %d\n", t->root->left->key, t->root->right->key, t->root->parent->key);
-    printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     rbtree_inorder(t->nil, arr, t->root, index);
     free(index);
     return 0;

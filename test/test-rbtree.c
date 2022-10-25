@@ -269,7 +269,6 @@ void test_color_constraint(const rbtree *t) {
   node_t *nil = NULL;
 #endif
   node_t *p = t->root;
-  printf("p->color: %d\n", p->color);
   assert(p == nil || p->color == RBTREE_BLACK);
 
   init_color_traverse();
@@ -325,21 +324,29 @@ void test_to_array_suite() {
 void test_find_erase(rbtree *t, const key_t *arr, const size_t n) {
   for (int i = 0; i < n; i++) {
     node_t *p = rbtree_insert(t, arr[i]);
-    printf(">>%d\n", arr[i]);
     assert(p != NULL);
   }
 
+  key_t *narin = calloc(n, sizeof(key_t));
+  rbtree_to_array(t, narin, n);
+  free(narin);
+
   for (int i = 0; i < n; i++)
-  {
-    node_t *p = rbtree_find(t, arr[i]);
-    assert(p != NULL);
-    assert(p->key == arr[i]);
-    rbtree_erase(t, p);
+    printf(">>%d\n", arr[i]);
+
+  for (int i = 0; i < n; i++)
+    {
+      printf("target: %d\n", arr[i]);
+      node_t *p = rbtree_find(t, arr[i]);
+      printf("key: %p %d\n", p, p->key);
+      printf("-----------------\n");
+      assert(p != NULL);
+      assert(p->key == arr[i]);
+      rbtree_erase(t, p);
     }
 
   for (int i = 0; i < n; i++) {
     node_t *p = rbtree_find(t, arr[i]);
-    printf("key: %d\n", p->key);
     assert(p == NULL);
   }
 
@@ -382,17 +389,17 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 }
 
 int main(void) {
-  test_init();
-  test_insert_single(1024);
-  test_find_single(512, 1024);
-  test_erase_root(128);
+  // test_init();//완
+  // test_insert_single(1024);//완
+  // test_find_single(512, 1024);//완
+  // test_erase_root(128);//완
   test_find_erase_fixed();
-  test_minmax_suite();
-  test_to_array_suite();
+  // test_minmax_suite();
+  // test_to_array_suite();//완
 
-  test_distinct_values();
-  test_duplicate_values();
-  // test_multi_instance();
+  // test_distinct_values();//완
+  // test_duplicate_values();//완
+  // test_multi_instance();//완
   // test_find_erase_rand(10000, 17);
   printf("Passed all tests!\n");
 }

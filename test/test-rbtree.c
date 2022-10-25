@@ -314,7 +314,8 @@ void test_to_array_suite() {
   rbtree *t = new_rbtree();
   assert(t != NULL);
 
-  key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 24, 36, 990, 25};
+  // key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 24, 36, 990, 25};
+  key_t entries[] = {10, 18,7,15, 16, 30, 25, 40};
   const size_t n = sizeof(entries) / sizeof(entries[0]);
   test_to_array(t, entries, n);
 
@@ -381,16 +382,16 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 }
 
 int main(void) {
-  // test_init();
-  // test_insert_single(1024);
-  // test_find_single(512, 1024);
-  // test_erase_root(128);
-  // test_find_erase_fixed();
-  // test_minmax_suite();
-  // test_to_array_suite();
+  test_init();
+  test_insert_single(1024);
+  test_find_single(512, 1024);
+  test_erase_root(128);
+  test_find_erase_fixed();
+  test_minmax_suite();
+  test_to_array_suite();
 
   test_distinct_values();
-  // test_duplicate_values();
+  test_duplicate_values();
   // test_multi_instance();
   // test_find_erase_rand(10000, 17);
   printf("Passed all tests!\n");

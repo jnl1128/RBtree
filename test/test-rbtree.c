@@ -95,7 +95,6 @@ void test_minmax(key_t *arr, const size_t n) {
   assert(n > 0 && arr != NULL);
   rbtree *t = new_rbtree();
   assert(t != NULL);
-
   insert_arr(t, arr, n);
   assert(t->root != NULL);
 
@@ -112,14 +111,6 @@ void test_minmax(key_t *arr, const size_t n) {
   node_t *q = rbtree_max(t);
   assert(q != NULL);
   assert(q->key == arr[n - 1]);
-
-  // for (int i = 0; i < n; i++)
-  //   printf("%d\n", arr[i]);
-  // 내가만든!!
-  key_t *b = calloc(n, sizeof(key_t));
-  rbtree_to_array(t, b, n);
-  for (int i = 0; i < n; i++) printf(">>>>>>%d\n", b[i]);
-  free(b);
 
   // re-check here!!(it means, getting min and max correctly)
   rbtree_erase(t, p);
@@ -312,8 +303,6 @@ void test_minmax_suite() {
 void test_to_array_suite() {
   rbtree *t = new_rbtree();
   assert(t != NULL);
-
-  // key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 24, 36, 990, 25};
   key_t entries[] = {10, 18,7,15, 16, 30, 25, 40};
   const size_t n = sizeof(entries) / sizeof(entries[0]);
   test_to_array(t, entries, n);
@@ -327,19 +316,9 @@ void test_find_erase(rbtree *t, const key_t *arr, const size_t n) {
     assert(p != NULL);
   }
 
-  key_t *narin = calloc(n, sizeof(key_t));
-  rbtree_to_array(t, narin, n);
-  free(narin);
-
-  for (int i = 0; i < n; i++)
-    printf(">>%d\n", arr[i]);
-
   for (int i = 0; i < n; i++)
     {
-      printf("target: %d\n", arr[i]);
       node_t *p = rbtree_find(t, arr[i]);
-      printf("key: %p %d\n", p, p->key);
-      printf("-----------------\n");
       assert(p != NULL);
       assert(p->key == arr[i]);
       rbtree_erase(t, p);
@@ -368,9 +347,7 @@ void test_find_erase_fixed() {
   const size_t n = sizeof(arr) / sizeof(arr[0]);
   rbtree *t = new_rbtree();
   assert(t != NULL);
-
   test_find_erase(t, arr, n);
-
   delete_rbtree(t);
 }
 
@@ -381,25 +358,22 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
   for (int i = 0; i < n; i++) {
     arr[i] = rand();
   }
-
   test_find_erase(t, arr, n);
-
   free(arr);
   delete_rbtree(t);
 }
 
 int main(void) {
-  // test_init();//완
-  // test_insert_single(1024);//완
-  // test_find_single(512, 1024);//완
-  // test_erase_root(128);//완
-  test_find_erase_fixed();
-  // test_minmax_suite();
-  // test_to_array_suite();//완
-
-  // test_distinct_values();//완
-  // test_duplicate_values();//완
-  // test_multi_instance();//완
-  // test_find_erase_rand(10000, 17);
+  test_init();//완
+  test_insert_single(1024);//완
+  test_find_single(512, 1024);//완
+  test_erase_root(128);//완
+  test_find_erase_fixed();//완
+  test_minmax_suite();//완
+  test_to_array_suite();//완
+  test_distinct_values();//완
+  test_duplicate_values();//완
+  test_multi_instance();//완
+  test_find_erase_rand(10000, 17);//완
   printf("Passed all tests!\n");
 }
